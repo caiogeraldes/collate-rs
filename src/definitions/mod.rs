@@ -38,7 +38,7 @@ impl CollationElement {
     pub fn levels(&self) -> Vec<CollationLevel> {
         let mut a = vec![];
         for (i, w) in self.0.iter().enumerate() {
-            let mut cl = CollationLevel::try_from((i + 1) as u32).unwrap();
+            let mut cl = CollationLevel::from(i + 1);
             cl.set_weight(*w);
             a.push(cl);
         }
@@ -134,7 +134,7 @@ impl From<&str> for CollationElement {
 ///```
 ///
 /// For convenience, this specification uses subscripted numbers after the symbol referring to a particular collation element to refer to the collation weights of that collation element at designated levels. Thus, for a collation element X, X1 refers to the primary weight, X2 refers to the secondary weight, X3 refers to the tertiary weight, and X4 refers to the quaternary weight.
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub enum CollationLevel {
     /// UTS10-D4. Primary Weight: The first collation weight in a collation element.
     ///
@@ -156,14 +156,13 @@ pub enum CollationLevel {
     // NWeight { i: u32, w: CollationWeight },
 }
 
-impl TryFrom<u32> for CollationLevel {
-    type Error = ();
-    fn try_from(value: u32) -> Result<Self, Self::Error> {
+impl From<usize> for CollationLevel {
+    fn from(value: usize) -> Self {
         match value {
-            1 => Ok(Self::PrimaryWeight(0.into())),
-            2 => Ok(Self::SecondaryWeight(0.into())),
-            3 => Ok(Self::TertiaryWeight(0.into())),
-            4 => Ok(Self::QuarternaryWeight(0.into())),
+            1 => Self::PrimaryWeight(0.into()),
+            2 => Self::SecondaryWeight(0.into()),
+            3 => Self::TertiaryWeight(0.into()),
+            4 => Self::QuarternaryWeight(0.into()),
             _ => unimplemented!(),
             // n => Ok(Self::NWeight { i: n, w: 0.into() }),
         }
@@ -210,12 +209,35 @@ mod tests {
 
     #[test]
     fn test_3_1() {
+        // UTS10-D1
         let a: CollationWeight = "06D9".into();
         let b: CollationWeight = "0020".into();
         let c: CollationWeight = "0002".into();
+        // UTS10-D2
         let f1 = CollationElement::new(vec![a, b, c]);
+        // UTS10-D3
         let f2 = CollationElement::from("[.06D9.0020.0002]");
         assert_eq!(f2, f1);
+
+        // UTS10-D4-7
+        let f1 = CollationElement::new(vec![a, a, a, a]);
+        let levels = f1.levels();
+        let help_vec = Vec::from([
+            CollationLevel::from(1),
+            CollationLevel::from(2),
+            CollationLevel::from(3),
+            CollationLevel::from(4),
+        ]);
+
+        let mut expected = vec![];
+        for mut cl in help_vec {
+            cl.set_weight(a);
+            expected.push(cl.clone())
+        }
+        assert_eq!(levels[0], expected[0]);
+        assert_eq!(levels[1], expected[1]);
+        assert_eq!(levels[2], expected[2]);
+        assert_eq!(levels[3], expected[3]);
     }
     #[test]
     fn test_3_2() {
