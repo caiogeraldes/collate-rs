@@ -51,7 +51,7 @@ impl CollationElementMapping {
     }
 
     /// Helper function to convert misassigned [`CollationElementMapping`]s
-    fn simplify(&mut self) -> Result<()> {
+    pub(crate) fn simplify(&mut self) -> Result<()> {
         match self {
             Self::SimpleMapping { .. } => {}
             Self::Expansion {
