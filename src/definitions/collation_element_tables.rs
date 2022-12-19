@@ -8,8 +8,7 @@ use crate::definitions::mappings::CollationElementMapping;
 pub struct CollationElementTable(Vec<CollationElementMapping>);
 
 /// > UTS10-D24. Explicit Weight Mapping: A mapping to one (or more) collation elements which is explicitly listed in a collation element table.
-#[allow(dead_code)]
-type ExplicitWeightMapping = CollationElementTable;
+// type ExplicitWeightMapping = CollationElementTable;
 /// > UTS10-D25. Implicit Weight Mapping: A mapping to one (or more) collation elements which is not explicitly listed in a collation element table, but which is instead derived by rule.
 /// >
 /// > The convention used by the Unicode Collation Algorithm is that the mapping for any character which is not listed explicitly in a given collation element table is instead determined by the implicit weight derivation rules. This convention extends to all unassigned code points, so that all Unicode strings can have determinant sort keys constructed for them. See Section 10, Weight Derivation for the rules governing the assignment of implicit weights.
@@ -17,8 +16,7 @@ type ExplicitWeightMapping = CollationElementTable;
 /// > Implementations can produce the same result using various representations of weights. In particular, while the Default Unicode Collation Element Table [Allkeys] stores weights of all levels using 16-bit integers, and such weights are shown in examples in this document, other implementations may choose to store weights in larger or smaller integer units, and may store weights of different levels in integer units of different sizes. See Section 9, Implementation Notes.
 /// >
 /// > The specific collation weight values shown in examples are illustrative only; they may not match the weights in the latest Default Unicode Collation Element Table [Allkeys].
-#[allow(dead_code)]
-type ImplicitWeightMapping = CollationElementTable;
+// type ImplicitWeightMapping = CollationElementTable;
 
 impl CollationElementTable {
     /// >    UTS10-D26. Minimum Weight at a Level: The least weight in any collation element in a given collation element table, at a specified level.
