@@ -106,4 +106,32 @@ mod tests {
             }
         )
     }
+
+    #[test]
+    fn test_3_4() {
+        use collation_element_tables::*;
+        use collation_wel::*;
+        use mappings::*;
+        let ce1 = CollationElement::from("[.0001.0001.0001.0001]");
+        let ce2 = CollationElement::from("[.0002.0002.0002.0002]");
+        let cm1 = CollationElementMapping::SimpleMapping {
+            character: 'a',
+            collation_element: ce1,
+        };
+        let cm2 = CollationElementMapping::SimpleMapping {
+            character: 'b',
+            collation_element: ce2,
+        };
+        let cet = CollationElementTable(vec![cm1, cm2]);
+        let expected = CollationWeight::from(1);
+        assert_eq!(cet.min_weight_at_l_n(1), &expected);
+        assert_eq!(cet.min_weight_at_l_n(2), &expected);
+        assert_eq!(cet.min_weight_at_l_n(3), &expected);
+        assert_eq!(cet.min_weight_at_l_n(4), &expected);
+        let expected = CollationWeight::from(2);
+        assert_eq!(cet.max_weight_at_l_n(1), &expected);
+        assert_eq!(cet.max_weight_at_l_n(2), &expected);
+        assert_eq!(cet.max_weight_at_l_n(3), &expected);
+        assert_eq!(cet.max_weight_at_l_n(4), &expected);
+    }
 }

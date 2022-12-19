@@ -5,7 +5,7 @@ use crate::definitions::mappings::CollationElementMapping;
 /// >
 /// > The basic idea of a collation element table is that it contains the collation weight information necessary to construct sort keys for Unicode strings.
 #[derive(Debug)]
-pub struct CollationElementTable(Vec<CollationElementMapping>);
+pub struct CollationElementTable(pub(crate) Vec<CollationElementMapping>);
 
 /// > UTS10-D24. Explicit Weight Mapping: A mapping to one (or more) collation elements which is explicitly listed in a collation element table.
 // type ExplicitWeightMapping = CollationElementTable;
@@ -73,35 +73,5 @@ impl CollationElement {
         } else {
             panic!("Unavailable level n")
         }
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn ok() {
-        let ce1 = CollationElement::from("[.0001.0001.0001.0001]");
-        let ce2 = CollationElement::from("[.0002.0002.0002.0002]");
-        let cm1 = CollationElementMapping::SimpleMapping {
-            character: 'a',
-            collation_element: ce1,
-        };
-        let cm2 = CollationElementMapping::SimpleMapping {
-            character: 'b',
-            collation_element: ce2,
-        };
-        let cet = CollationElementTable(vec![cm1, cm2]);
-        let expected = CollationWeight::from(1);
-        assert_eq!(cet.min_weight_at_l_n(1), &expected);
-        assert_eq!(cet.min_weight_at_l_n(2), &expected);
-        assert_eq!(cet.min_weight_at_l_n(3), &expected);
-        assert_eq!(cet.min_weight_at_l_n(4), &expected);
-        let expected = CollationWeight::from(2);
-        assert_eq!(cet.max_weight_at_l_n(1), &expected);
-        assert_eq!(cet.max_weight_at_l_n(2), &expected);
-        assert_eq!(cet.max_weight_at_l_n(3), &expected);
-        assert_eq!(cet.max_weight_at_l_n(4), &expected);
     }
 }
