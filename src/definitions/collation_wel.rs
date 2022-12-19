@@ -1,5 +1,5 @@
 /// > UTS10-D1. Collation Weight: A non-negative integer used in the UCA to establish a means for systematic comparison of constructed sort keys.
-#[derive(Debug, PartialEq, Eq, Clone, Copy)]
+#[derive(Debug, PartialEq, Eq, Clone, Copy, PartialOrd, Ord)]
 pub struct CollationWeight(pub(crate) u32);
 
 impl From<&CollationWeight> for u32 {

@@ -34,10 +34,10 @@ pub mod conformance;
 ///  - [x] UTS10-D20
 ///  - [x] UTS10-D21
 ///  - [x] UTS10-D22
-///  - [ ] UTS10-D23
+///  - [x] UTS10-D23
 ///  - [ ] UTS10-D24
-///  - [ ] UTS10-D25
-///  - [ ] UTS10-D26
+///  - [x] UTS10-D25
+///  - [x] UTS10-D26
 ///  - [ ] UTS10-D27
 ///  - [ ] UTS10-D28
 ///  - [ ] UTS10-D29

@@ -12,6 +12,9 @@ pub mod ignorable;
 /// > An important feature of the Unicode Collation Algorithm is the systematic mapping of Unicode characters (in Unicode strings) to sequences of collation elements, for the purpose of comparing those strings. The sequence of collation elements is then converted into a sort key, suitable for direct comparison. This section defines the various types of collation element mappings discussed in the specification of the algorithm.
 pub mod mappings;
 
+/// Defines Collation Element Tables
+pub mod collation_element_tables;
+
 #[cfg(test)]
 mod tests {
     use super::*;
