@@ -1,3 +1,5 @@
+use anyhow::Result;
+
 /// UTS10-D1. Collation Weight: A non-negative integer used in the UCA to establish a means for systematic comparison of constructed sort keys.
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
 pub struct CollationWeight(u32);
@@ -272,22 +274,21 @@ mod tests {
         // UTS10-D15
         assert!(f1.is_n_ignorable(1));
     }
+
+    #[test]
+    fn test_3_3() {
+        let c = ['a'];
+        let ce = [CollationElement::from("[.1C47.0020.0002]")];
+        let cem = CollationElementMapping::new(&c, &ce);
+        assert!(cem.is_ok());
+        let cem = cem.unwrap();
+        assert!(!cem.is_contraction());
+        assert_eq!(
+            cem,
+            CollationElementMapping::SimpleMapping {
+                character: 'a',
+                collation_element: CollationElement::from("[.1C47.0020.002]")
+            }
+        )
+    }
 }
-
-/// UTS10-D16. Variable Collation Element: A primary collation element with a low (but non-zero) value for its primary weight.
-///
-/// > Low primary weights are generally reserved for punctuation and symbols, to enable special handling of those kinds of characters. Variable collation elements are subject to special rules when constructing sort keys. See Section 4, Variable Weighting. In the Default Unicode Collation Element Table [Allkeys](https://www.unicode.org/reports/tr10/#Allkeys) the primary weights of all variable collation elements are prefixed with an asterisk instead of a dot, so that they can be clearly identified.
-///
-/// The relationship between these terms for patterns of ignorable weights in collation elements, together with schematic examples of the corresponding collation elements, is shown in the following table, constructed on the assumption that collation elements have four collation levels. Note that quaternary collation elements have the same schematic pattern of weights as variable collation elements which have been shifted.
-///
-/// | Schematic Example      | Main Term                                | General Type  | Level Notation    |
-/// |------------------------|------------------------------------------|---------------|-------------------|
-/// | [.nnnn.nnnn.nnnn.nnnn] | Primary Collation Element                | Non-ignorable | Level 0 Ignorable |
-/// | [*nnnn.nnnn.nnnn.nnnn] | Variable Collation Element (not shifted) | Non-ignorable | Level 0 Ignorable |
-/// | [.0000.nnnn.nnnn.nnnn] | Secondary Collation Element              | Ignorable     | Level 1 Ignorable |
-/// | [.0000.0000.nnnn.nnnn] | Tertiary Collation Element               | Ignorable     | Level 2 Ignorable |
-/// | [.0000.0000.0000.nnnn] | Quaternary Collation Element             | Ignorable     | Level 3 Ignorable |
-/// | [.0000.0000.0000.nnnn] | Variable Collation Element (shifted)     | Ignorable     | Level 3 Ignorable |
-/// | [.0000.0000.0000.0000] | Completely Ignorable Collation Element   | Ignorable     | Level 4 Ignorable |
-
-pub type VariableCollationElement = u32;
