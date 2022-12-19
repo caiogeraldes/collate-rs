@@ -1,5 +1,7 @@
 # collate-rs: a Rust Implementation of Unicode Collation Algorithm
 
+[![Rust](https://github.com/caiogeraldes/collate-rs/actions/workflows/rust.yml/badge.svg)](https://github.com/caiogeraldes/collate-rs/actions/workflows/rust.yml)
+
 **Beware:** This is a work in progress intended as a way to learn Rust and the UCA.
 The contents of this document as well as the source code of this project are mostly
 for personal use in the current state.
