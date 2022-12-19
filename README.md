@@ -75,3 +75,5 @@ this project.
 
 4. If something does not need to be public, but the documentation is important for
    learning purposes, make it public, this is a literate programming project, maybe.
+5. Empty modules representing a section not yet started to be implemented must be
+   tagged with `#[cfg(feature = "todo")]` in `src/lib.rs`. This is just for my workflow.
