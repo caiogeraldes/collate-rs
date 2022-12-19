@@ -43,10 +43,10 @@ impl CollationElementMapping {
 
     /// UTS10-D22. Contraction: Either a many-to-one mapping or a many-to-many mapping.
     pub fn is_contraction(&self) -> bool {
-        match self {
-            Self::ManyToOneMapping { .. } | Self::ManyToManyMapping { .. } => true,
-            _ => false,
-        }
+        matches!(
+            self,
+            Self::ManyToOneMapping { .. } | Self::ManyToManyMapping { .. }
+        )
     }
 
     /// Helper function to convert misassigned [`CollationElementMapping`]s
