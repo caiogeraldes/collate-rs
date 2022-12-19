@@ -1,19 +1,25 @@
 use crate::definitions::collation_wel::*;
-/// UTS10-D8. Ignorable Weight: A collation weight whose value is zero.
+/// Provides an abstraction layer for the trait `Ignorable`.
 ///
-/// >  In the 4-digit hexadecimal format used in this specification, ignorable weights are expressed as "0000".
-///
-/// Ignorable weights are passed over by the rules that construct sort keys from sequences of collation elements. Thus, their presence in collation elements does not impact the comparison of strings using the resulting sort keys. The judicious assignment of ignorable weights in collation elements is an important concept for the UCA.
+/// A [`CollationWeight`], [`CollationElement`] or [`CollationLevel`] might be evaluated as
+/// ignorable.
 pub trait Ignorable {
     fn is_ignorable(&self) -> bool;
 }
 
+/// > UTS10-D8. Ignorable Weight: A collation weight whose value is zero.
+/// >
+/// >>  In the 4-digit hexadecimal format used in this specification, ignorable weights are expressed as "0000".
+/// >
+/// > Ignorable weights are passed over by the rules that construct sort keys from sequences of collation elements. Thus, their presence in collation elements does not impact the comparison of strings using the resulting sort keys. The judicious assignment of ignorable weights in collation elements is an important concept for the UCA.
 impl Ignorable for CollationWeight {
     fn is_ignorable(&self) -> bool {
         self.0 == 0
     }
 }
 
+/// This implementation of [`Ignorable`] to [`CollationLevel`] is necessary for satisfying the
+/// definition UTS10-D15, implemented in [`CollationElement::is_n_ignorable`].
 impl Ignorable for CollationLevel {
     fn is_ignorable(&self) -> bool {
         let w: u32 = match self {
@@ -28,8 +34,13 @@ impl Ignorable for CollationLevel {
 }
 
 impl CollationElement {
-    /// N Collation Element: A collation element whose Level N weight is not an ignorable weight.
-    fn is_n_collation_element(&self, n: usize) -> bool {
+    /// Provides an abstraction for the definitions UTS10-D9-12, assuming a general definition:
+    ///
+    /// > N Collation Element: A collation element whose Level N weight is not an ignorable weight.
+    ///
+    /// ## Panics
+    /// If the value `n == 0`, as N is a non-zero positive integer.
+    pub fn is_n_collation_element(&self, n: usize) -> bool {
         if n == 0 {
             panic!("N positions should be non-zero integers.")
         }
@@ -40,31 +51,31 @@ impl CollationElement {
         }
     }
 
-    /// UTS10-D9. Primary Collation Element: A collation element whose Level 1 weight is not an ignorable weight.
+    /// > UTS10-D9. Primary Collation Element: A collation element whose Level 1 weight is not an ignorable weight.
     pub fn is_primary_collation_element(&self) -> bool {
         self.is_n_collation_element(1)
     }
-    /// UTS10-D10. Secondary Collation Element: A collation element whose Level 1 weight is an ignorable weight but whose Level 2 weight is not an ignorable weight.
+    /// > UTS10-D10. Secondary Collation Element: A collation element whose Level 1 weight is an ignorable weight but whose Level 2 weight is not an ignorable weight.
     pub fn is_secondary_collation_element(&self) -> bool {
         self.is_n_collation_element(2)
     }
-    /// UTS10-D11. Tertiary Collation Element: A collation element whose Level 1 and Level 2 weights are ignorable weights but whose Level 3 weight is not an ignorable weight.
+    /// > UTS10-D11. Tertiary Collation Element: A collation element whose Level 1 and Level 2 weights are ignorable weights but whose Level 3 weight is not an ignorable weight.
     pub fn is_tertiary_collation_element(&self) -> bool {
         self.is_n_collation_element(3)
     }
-    /// UTS10-D12. Quaternary Collation Element: A collation element whose Level 1, Level 2, and Level 3 weights are ignorable weights but whose Level 4 weight is not an ignorable weight.
+    /// > UTS10-D12. Quaternary Collation Element: A collation element whose Level 1, Level 2, and Level 3 weights are ignorable weights but whose Level 4 weight is not an ignorable weight.
     pub fn is_quarternary_collation_element(&self) -> bool {
         self.is_n_collation_element(4)
     }
 
-    /// UTS10-D13. Completely Ignorable Collation Element: A collation element which has ignorable weights at all levels.
+    /// > UTS10-D13. Completely Ignorable Collation Element: A collation element which has ignorable weights at all levels.
     pub fn is_completely_ignorable_collation_element(&self) -> bool {
         self.0.iter().all(|c| c.is_ignorable())
     }
 
-    /// UTS10-D15. Level N Ignorable: A collation element which has an ignorable weight at level N, but not at level N+1.
-    ///
-    /// > This concept is useful for parameterized expressions with weight level as a parameter. For example "Level 1 ignorable" is a synonym for a secondary collation element. This alternate terminology is generally avoided in this specification, however, because of the potential for confusion.
+    /// > UTS10-D15. Level N Ignorable: A collation element which has an ignorable weight at level N, but not at level N+1.
+    /// >
+    /// >> This concept is useful for parameterized expressions with weight level as a parameter. For example "Level 1 ignorable" is a synonym for a secondary collation element. This alternate terminology is generally avoided in this specification, however, because of the potential for confusion.
     pub fn is_n_ignorable(&self, n: usize) -> bool {
         if n == 0 {
             panic!("N positions should be non-zero integers.")
@@ -87,20 +98,20 @@ impl CollationElement {
     }
 }
 
-/// UTS10-D14. Ignorable Collation Element: A collation element which is not a primary collation element.
-///
-/// > The term ignorable collation element is a convenient cover term for any type of collation element which has a zero primary weight. It includes secondary, tertiary, quaternary, and completely ignorable collation elements. In contrast, a primary collation element, which by definition does not have a zero primary weight, can also be referred to as a non-ignorable collation element.
+/// > UTS10-D14. Ignorable Collation Element: A collation element which is not a primary collation element.
+/// >
+/// >> The term ignorable collation element is a convenient cover term for any type of collation element which has a zero primary weight. It includes secondary, tertiary, quaternary, and completely ignorable collation elements. In contrast, a primary collation element, which by definition does not have a zero primary weight, can also be referred to as a non-ignorable collation element.
 impl Ignorable for CollationElement {
     fn is_ignorable(&self) -> bool {
         !self.is_primary_collation_element()
     }
 }
 
-// UTS10-D16. Variable Collation Element: A primary collation element with a low (but non-zero) value for its primary weight.
-//
-// > Low primary weights are generally reserved for punctuation and symbols, to enable special handling of those kinds of characters. Variable collation elements are subject to special rules when constructing sort keys. See Section 4, Variable Weighting. In the Default Unicode Collation Element Table [Allkeys](https://www.unicode.org/reports/tr10/#Allkeys) the primary weights of all variable collation elements are prefixed with an asterisk instead of a dot, so that they can be clearly identified.
-//
-// The relationship between these terms for patterns of ignorable weights in collation elements, together with schematic examples of the corresponding collation elements, is shown in the following table, constructed on the assumption that collation elements have four collation levels. Note that quaternary collation elements have the same schematic pattern of weights as variable collation elements which have been shifted.
+// > UTS10-D16. Variable Collation Element: A primary collation element with a low (but non-zero) value for its primary weight.
+// >
+// >> Low primary weights are generally reserved for punctuation and symbols, to enable special handling of those kinds of characters. Variable collation elements are subject to special rules when constructing sort keys. See Section 4, Variable Weighting. In the Default Unicode Collation Element Table [Allkeys](https://www.unicode.org/reports/tr10/#Allkeys) the primary weights of all variable collation elements are prefixed with an asterisk instead of a dot, so that they can be clearly identified.
+// >
+// > The relationship between these terms for patterns of ignorable weights in collation elements, together with schematic examples of the corresponding collation elements, is shown in the following table, constructed on the assumption that collation elements have four collation levels. Note that quaternary collation elements have the same schematic pattern of weights as variable collation elements which have been shifted.
 //
 // | Schematic Example      | Main Term                                | General Type  | Level Notation    |
 // |------------------------|------------------------------------------|---------------|-------------------|

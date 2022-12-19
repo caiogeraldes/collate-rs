@@ -1,9 +1,15 @@
-/// Defines the Collation Weights, Elements and Levels
+/// Defines the [`CollationWeight`](`collation_wel::CollationWeight`), [`CollationElement`](`collation_wel::CollationElement`) and [`CollationLevel`](`collation_wel::CollationLevel`) (Covering UTS10-D1-D7).
+///
+/// The basic concepts of collation weights, collation elements, and collation levels are defined here first, as all other aspects of the Unicode Collation Algorithm depend fundamentally on those concepts.
 pub mod collation_wel;
 
-/// Defines the Ignorable trait and related tools.
+/// Defines the [`Ignorable`](`ignorable::Ignorable`) trait and functions related (Covering
+/// UTS10-D8-D16).
 pub mod ignorable;
 
+/// Defines mappings
+///
+/// An important feature of the Unicode Collation Algorithm is the systematic mapping of Unicode characters (in Unicode strings) to sequences of collation elements, for the purpose of comparing those strings. The sequence of collation elements is then converted into a sort key, suitable for direct comparison. This section defines the various types of collation element mappings discussed in the specification of the algorithm.
 pub mod mappings;
 
 #[cfg(test)]
